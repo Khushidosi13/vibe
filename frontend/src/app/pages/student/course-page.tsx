@@ -108,6 +108,7 @@ export default function CoursePage() {
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
   const [isFlagSubmitted, setIsFlagSubmitted] = useState(false);
   const [isSkippingItem, setIsSkippingItem] = useState(false);
+  const [courseJustCompleted, setCourseJustCompleted] = useState(false);
   const { mutateAsync: submitFlagAsyncMutate, isPending } = useSubmitFlag();
   const { mutateAsync: skipItemAsync, isPending: isSkipping } = useSkipOptionalItem();
   const { mutateAsync: recalculateStudentProgressAsync } = useRecalculateStudentProgress();
@@ -256,13 +257,7 @@ const [backgroundSectionInfo, setBackgroundSectionInfo] = useState<{
 
   const shouldRandomize = courseVersionData?.shouldRandomize || false;
 
-    console.log("******************")
-    console.log("******************")
-    console.log(courseVersionData)
-    console.log("******************")
-    console.log("******************")
-
-  // Fetch user progress
+    // Fetch user progress
   const { data: progressData, isLoading: progressLoading, error: progressError } =
     useUserProgress(COURSE_ID, VERSION_ID, COHORT_ID);
   const { data: moduleProgressData, isLoading: moduleProgressLoading } =
@@ -273,7 +268,7 @@ const [backgroundSectionInfo, setBackgroundSectionInfo] = useState<{
   const [proctoringData, setProctoringData] = useState<StudentProctoringSettings | null>(null);
 
 
-  const sectionModuleId = activeSectionInfo?.moduleId ?? '';
+  
   const sectionId = activeSectionInfo?.sectionId ?? '';
 
   // ---------------------------------------------
@@ -1189,6 +1184,7 @@ const [backgroundSectionInfo, setBackgroundSectionInfo] = useState<{
           const isCourseFullyCompleted = allItemIds.size > 0 && allItemIds.size === completedItemIds.size;
 
           if (isCourseFullyCompleted) {
+             setCourseJustCompleted(true);
             // Confetti celebration
             const end = Date.now() + 3000;
             const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
@@ -1517,22 +1513,6 @@ const handleGoToNextItem = async () => {
     setTimeout(() => setIsGoingToNext(false), 800);
   }
 };
-// Auto-redirect to dashboard when the learner lands on the last item
-// and it is already completed (no next item exists in the sequence).
-useEffect(() => {
-  if (!currentItem) return;
-  if (!(currentItem as any).isCompleted) return;
-
-  const next = findNextItem();
-  if (next) return; // not the last item
-  // Small delay so the learner briefly sees the item before redirect
-  const timer = setTimeout(() => {
-    router.navigate({ to: '/student' });
-  }, 2000);
-  return () => clearTimeout(timer);
-}, [currentItem, findNextItem, router]);
-
-
 
   // Autoscroll to selected sidebar item when selectedItemId changes
   useEffect(() => {
@@ -1540,6 +1520,16 @@ useEffect(() => {
       selectedItemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [selectedItemId]);
+
+  useEffect(() => {
+  if (!courseJustCompleted) return;
+
+  const timer = setTimeout(() => {
+    router.navigate({ to: "/student" });
+  }, 3500);
+
+  return () => clearTimeout(timer);
+}, [courseJustCompleted, router]);
 
   useEffect(() => {
     refetchVersion();
