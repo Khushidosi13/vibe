@@ -1591,6 +1591,16 @@ export default function Video({ URL, startTime, nextItemId, endTime, points, ano
                               </div>
 
                             ) : <></>}
+
+                            {anomalies?.includes("faceRecognition") ? (
+
+                              <div style={{ marginBottom: 6 }}>
+
+                                <strong>Identity mismatch! Please ensure the registered student is watching.</strong>
+
+                              </div>
+
+                            ) : <></>}
                             
                             {anomalies?.includes("cameraIntegrity") ? (
                               <div style={{ marginBottom: 6 }}>
