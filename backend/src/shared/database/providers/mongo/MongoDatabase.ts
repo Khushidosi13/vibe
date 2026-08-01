@@ -48,7 +48,6 @@ export class MongoDatabase implements IDatabase<Db> {
         tlsAllowInvalidCertificates: false,
         tlsAllowInvalidHostnames: false,
       } : {}),
-
       retryWrites: true,
 
       // 🔹 CONNECTION POOL
