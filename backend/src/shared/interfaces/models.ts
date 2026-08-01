@@ -331,6 +331,7 @@ export interface IVideoDetails {
   startTime: string;
   endTime: string;
   points: number;
+  isLensEnabled?: boolean;
 }
 
 export interface IQuestionBankRef {

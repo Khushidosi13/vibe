@@ -795,7 +795,7 @@ class ProgressService extends BaseService {
 
     // Check if the moduleId is the last module in the course
     const sortedModules = [...courseVersion.modules].sort((a, b) =>
-      a.order.localeCompare(b.order),
+      String(a.order).localeCompare(String(b.order)),
     );
     const lastModule = sortedModules[sortedModules.length - 1].moduleId;
     if (lastModule?.toString() === moduleId) {
@@ -805,7 +805,7 @@ class ProgressService extends BaseService {
     // Check if the sectionId is the last section in the module
     const sortedSections = courseVersion.modules
       .find(module => module.moduleId?.toString() === moduleId)
-      ?.sections.sort((a, b) => a.order.localeCompare(b.order));
+      ?.sections.sort((a, b) => String(a.order).localeCompare(String(b.order)));
     const lastSection = sortedSections?.[sortedSections.length - 1].sectionId;
     if (lastSection?.toString() === sectionId) {
       isLastSection = true;
@@ -824,7 +824,7 @@ class ProgressService extends BaseService {
       itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
     }
     const sortedItems = itemsGroup.items.sort((a, b) =>
-      a.order.localeCompare(b.order),
+      String(a.order).localeCompare(String(b.order)),
     );
     const lastItem = sortedItems[sortedItems.length - 1]._id;
     if (lastItem?.toString() === itemId) {
@@ -843,7 +843,7 @@ class ProgressService extends BaseService {
       );
       const nextModule = sortedModules[currentModuleIndex + 1];
       const firstSection = nextModule?.sections.sort((a, b) =>
-        a.order.localeCompare(b.order),
+        String(a.order).localeCompare(String(b.order)),
       )[0];
       const itemsGroup = await this.itemRepo.readItemsGroup(
         firstSection?.itemsGroupId.toString(),
@@ -852,7 +852,7 @@ class ProgressService extends BaseService {
         itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
       }
       const firstItem = itemsGroup.items.sort((a, b) =>
-        a.order.localeCompare(b.order),
+        String(a.order).localeCompare(String(b.order)),
       )[0];
 
       return {
@@ -876,7 +876,7 @@ class ProgressService extends BaseService {
         itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
       }
       const firstItem = itemsGroup.items.sort((a, b) =>
-        a.order.localeCompare(b.order),
+        String(a.order).localeCompare(String(b.order)),
       )[0];
 
       return {
@@ -919,7 +919,7 @@ class ProgressService extends BaseService {
     let isFirstModule = false;
 
     const sortedModules = [...courseVersion.modules].sort((a, b) =>
-      a.order.localeCompare(b.order),
+      String(a.order).localeCompare(String(b.order)),
     );
     const firstModule = sortedModules[0].moduleId;
     if (firstModule?.toString() === moduleId) {
@@ -928,7 +928,7 @@ class ProgressService extends BaseService {
 
     const sortedSections = courseVersion.modules
       .find(module => module.moduleId?.toString() === moduleId)
-      ?.sections.sort((a, b) => a.order.localeCompare(b.order));
+      ?.sections.sort((a, b) => String(a.order).localeCompare(String(b.order)));
     const firstSection = sortedSections?.[0].sectionId;
     if (firstSection?.toString() === sectionId) {
       isFirstSection = true;
@@ -946,7 +946,7 @@ class ProgressService extends BaseService {
       itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
     }
     const sortedItems = itemsGroup.items.sort((a, b) =>
-      a.order.localeCompare(b.order),
+      String(a.order).localeCompare(String(b.order)),
     );
     const firstItem = sortedItems[0]._id;
     if (firstItem?.toString() === itemId) {
@@ -963,7 +963,7 @@ class ProgressService extends BaseService {
       );
       const prevModule = sortedModules[currentModuleIndex - 1];
       const lastSection = prevModule?.sections.sort((a, b) =>
-        a.order.localeCompare(b.order),
+        String(a.order).localeCompare(String(b.order)),
       )[prevModule.sections.length - 1];
       const itemsGroup = await this.itemRepo.readItemsGroup(
         lastSection?.itemsGroupId.toString(),
@@ -972,7 +972,7 @@ class ProgressService extends BaseService {
         itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
       }
       const lastItem = itemsGroup.items.sort((a, b) =>
-        a.order.localeCompare(b.order),
+        String(a.order).localeCompare(String(b.order)),
       )[itemsGroup.items.length - 1];
 
       return {
@@ -994,7 +994,7 @@ class ProgressService extends BaseService {
         itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
       }
       const lastItem = itemsGroup?.items?.sort((a, b) =>
-        a.order.localeCompare(b.order),
+        String(a.order).localeCompare(String(b.order)),
       )[itemsGroup.items.length - 1];
 
       return {
@@ -1070,14 +1070,14 @@ class ProgressService extends BaseService {
     completed: boolean;
   } | null> {
     const sortedModules = [...courseVersion.modules].sort((a, b) =>
-      a.order.localeCompare(b.order),
+      String(a.order).localeCompare(String(b.order)),
     );
 
     const firstModule = sortedModules[0];
     if (!firstModule) return null;
 
     const sortedSections = [...firstModule.sections].sort((a, b) =>
-      a.order.localeCompare(b.order),
+      String(a.order).localeCompare(String(b.order)),
     );
     const firstSection = sortedSections[0];
     if (!firstSection) return null;
@@ -1091,7 +1091,7 @@ class ProgressService extends BaseService {
     if (!itemsGroup.items.length) return null;
 
     const sortedItems = [...itemsGroup.items].sort((a, b) =>
-      a.order.localeCompare(b.order),
+      String(a.order).localeCompare(String(b.order)),
     );
     const firstItem = sortedItems[0];
     if (!firstItem) return null;
