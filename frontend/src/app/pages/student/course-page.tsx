@@ -60,8 +60,8 @@ const BLOCKING_ANOMALIES = ["noFace", "faceCountDetection", "multipleFaces", "fa
 // Helper function to sort items by order property
 const sortItemsByOrder = (items: any[]) => {
   return [...items].sort((a, b) => {
-    const orderA = a.order || '';
-    const orderB = b.order || '';
+    const orderA = a.order !== undefined && a.order !== null ? String(a.order) : '';
+    const orderB = b.order !== undefined && b.order !== null ? String(b.order) : '';
     return orderA.localeCompare(orderB);
   });
 };
@@ -1854,8 +1854,12 @@ return false;
           keeps decoding and anomaly detection keeps running off-screen. */}
       {!showProctorDialog && (
         <div
-          aria-hidden
-          className="bottom-0 left-0 z-0 fixed opacity-0 w-px h-px overflow-hidden pointer-events-none"
+          aria-hidden={allProctorsDisabled}
+          className={
+            allProctorsDisabled
+              ? "bottom-0 left-0 z-0 fixed opacity-0 w-px h-px overflow-hidden pointer-events-none"
+              : "fixed bottom-4 right-4 z-[999999] w-[200px] hover:shadow-2xl transition-shadow rounded-lg overflow-hidden"
+          }
         >
           <FloatingVideo
             isVisible={!allProctorsDisabled}
@@ -1936,6 +1940,7 @@ return false;
                   keyboardLockEnabled={!isFlagModalOpen && !drawerOpen && !aiSheet}
                   linearProgressionEnabled={proctoringData?.settings.linearProgressionEnabled || true}
                   seekForwardEnabled={proctoringData?.settings.seekForwardEnabled || false}
+                  isLensEnabled={proctoringData?.settings?.isLensEnabled ?? true}
                   setIsQuizSkipped={setIsQuizSkipped}
                   courseId={COURSE_ID}
                   versionId={VERSION_ID}
