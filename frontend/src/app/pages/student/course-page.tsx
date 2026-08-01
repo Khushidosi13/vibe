@@ -76,7 +76,7 @@ export default function CoursePage() {
   }, []);
   const [attemptId, setAttemptId] = useState<string | null>(null);
   // Dialog state for proctoring declaration
-  const [showProctorDialog, setShowProctorDialog] = useState(true);
+  const [showProctorDialog, setShowProctorDialog] = useState(false);
   const { user } = useAuthStore();
   const router = useRouter();
   const currentCourse = useCourseStore((state) => state.currentCourse);
@@ -102,7 +102,7 @@ export default function CoursePage() {
   const { mutateAsync: submitFlagAsyncMutate, isPending } = useSubmitFlag();
   const { mutateAsync: skipItemAsync, isPending: isSkipping } = useSkipOptionalItem();
   const { mutateAsync: recalculateStudentProgressAsync } = useRecalculateStudentProgress();
-  const [allProctorsDisabled, setAllProctorsDisabled] = useState(false);
+  const [allProctorsDisabled, setAllProctorsDisabled] = useState(true);
   const streamRef = useRef<MediaStream | null>(null);
 
   // Emotion tracking state
@@ -214,7 +214,7 @@ export default function CoursePage() {
   const [quizPassed, setQuizPassed] = useState(2);
   const [anomalies, setAnomalies] = useState<string[]>([]);
   const [isQuizSkipped, setIsQuizSkipped] = useState(false);
-  const [readyToDetect, setReadyToDetect] = useState(false);
+  const [readyToDetect, setReadyToDetect] = useState(true);
 
   // --- Focused learn-page UI state ---
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -491,15 +491,9 @@ export default function CoursePage() {
         const data = await getSettings(COURSE_ID, VERSION_ID);
         if (data) {
           setProctoringData(data);
-          const allProctorsDisabled =
-            data.settings.proctors.detectors.every(
-              (detector: any) => detector.settings.enabled === false
-            );
-          if (allProctorsDisabled) {
-            setShowProctorDialog(false);
-            setAllProctorsDisabled(true);
-            setReadyToDetect(true);
-          }
+          setShowProctorDialog(false);
+          setAllProctorsDisabled(true);
+          setReadyToDetect(true);
         }
       } catch (err) {
         console.error("Failed to fetch settings:", err);
@@ -1865,45 +1859,7 @@ return false;
         </DialogContent>
       </Dialog>
 
-      {/* Hidden proctoring engine — kept mounted (clipped to 1px) so the webcam
-          keeps decoding and anomaly detection keeps running off-screen. */}
-      {!showProctorDialog && (
-        <div
-          aria-hidden={allProctorsDisabled}
-          className={
-            allProctorsDisabled
-              ? "bottom-0 left-0 z-0 fixed opacity-0 w-px h-px overflow-hidden pointer-events-none"
-              : "fixed bottom-4 right-4 z-[999999] w-[200px] hover:shadow-2xl transition-shadow rounded-lg overflow-hidden"
-          }
-        >
-          <FloatingVideo
-            isVisible={!allProctorsDisabled}
-            onClose={() => { }}
-            onAnomalyDetected={() => { }}
-            setDoGesture={setDoGesture}
-            settings={proctoringData || {
-              _id: "",
-              studentId: "",
-              versionId: "",
-              courseId: "",
-              settings: {
-                proctors: {
-                  detectors: []
-                },
-                linearProgressionEnabled: true
-              }
-            }}
-            anomalies={anomalies}
-            readyToDetect={readyToDetect}
-            setReadyToDetect={setReadyToDetect}
-            setAnomalies={setAnomalies}
-            rewindVid={rewindVid}
-            setRewindVid={setRewindVid}
-            pauseVid={pauseVid}
-            setPauseVid={setPauseVid}
-          />
-        </div>
-      )}
+
 
       {/* Focused cinematic stage */}
       <main
