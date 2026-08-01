@@ -484,23 +484,38 @@ export default function CoursePage() {
   useEffect(() => {
   }, [itemData]);
 
-  // Log proctoring settings when loaded (only logs once when data is available)
+  // Log proctoring settings when loaded (and refetch on window focus for instant sync)
   useEffect(() => {
-    async function fetch() {
-      const data = await getSettings(COURSE_ID, VERSION_ID);
-      setProctoringData(data);
-      const allProctorsDisabled =
-        data.settings.proctors.detectors.every(
-          (detector: any) => detector.settings.enabled === false
-        );
-      if (allProctorsDisabled) {
-        setShowProctorDialog(false);
-        setAllProctorsDisabled(true);
-        setReadyToDetect(true);
+    async function fetchSettings() {
+      try {
+        const data = await getSettings(COURSE_ID, VERSION_ID);
+        if (data) {
+          setProctoringData(data);
+          const allProctorsDisabled =
+            data.settings.proctors.detectors.every(
+              (detector: any) => detector.settings.enabled === false
+            );
+          if (allProctorsDisabled) {
+            setShowProctorDialog(false);
+            setAllProctorsDisabled(true);
+            setReadyToDetect(true);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings:", err);
       }
     }
-    fetch();
-  }, []);
+
+    fetchSettings();
+
+    const handleFocus = () => {
+      fetchSettings();
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [COURSE_ID, VERSION_ID]);
 
   // Update section items when data is loaded
   useEffect(() => {

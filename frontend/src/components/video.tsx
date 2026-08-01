@@ -100,6 +100,15 @@ export default function Video({ URL, startTime, nextItemId, endTime, points, ano
     }, 4000);
     return () => clearInterval(id);
   }, [readyToDetect]);
+
+  // Force close Lens overlay and panel if Lens is disabled
+  useEffect(() => {
+    if (!isLensEnabled) {
+      setIsLensPanelOpen(false);
+      setIsLensOverlayOpen(false);
+      setCroppingSnapshot(null);
+    }
+  }, [isLensEnabled]);
   const videoId = getYouTubeId(URL);
   const { currentCourse, setWatchItemId } = useCourseStore();
   const startItem = useStartItem();
