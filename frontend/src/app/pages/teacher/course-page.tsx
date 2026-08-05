@@ -31,6 +31,7 @@ import {
   Copy,
   Download,
   UserCheck,
+  Video,
   Headphones,
   ExternalLink,
   Megaphone,
@@ -43,6 +44,7 @@ import {
   MoreVertical,
   MoreVerticalIcon,
   MessageSquareQuote,
+  NotebookPen,
 } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
@@ -1453,6 +1455,18 @@ function VersionCard({
     storePageAndNavigate("/teacher/courses/student-questions")
   }
 
+  const goToReflections = () => {
+    setCurrentCourse({
+      courseId: courseId,
+      versionId: selectedVersionId ? selectedVersionId : null,
+      moduleId: null,
+      sectionId: null,
+      itemId: null,
+      watchItemId: null,
+    })
+    storePageAndNavigate("/teacher/courses/reflections")
+  }
+
   const viewInstructors = () => {
     // Set course info in store and navigate to instructors page
     setCurrentCourse({
@@ -1526,6 +1540,20 @@ function VersionCard({
       watchItemId: null,
     })
     storePageAndNavigate("/teacher/courses/view")
+  }
+
+  // The course's uploaded-video library, where lectures are uploaded once and
+  // then referenced by any number of lessons.
+  const viewCourseVideos = () => {
+    setCurrentCourse({
+      courseId: courseId,
+      versionId: selectedVersionId ? selectedVersionId : null,
+      moduleId: null,
+      sectionId: null,
+      itemId: null,
+      watchItemId: null,
+    })
+    storePageAndNavigate("/teacher/courses/videos")
   }
 
   const handleGenerateLink = async () => {
@@ -1785,6 +1813,15 @@ function VersionCard({
                       >
                         <MessageSquareQuote className="mr-2 h-4 w-4" />
                         Student Questions
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          goToReflections();
+                        }}
+                      >
+                        <NotebookPen className="mr-2 h-4 w-4" />
+                        Reflections
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={configureCohorts}>
                         <Layers className="mr-2 h-4 w-4" />
@@ -2063,6 +2100,15 @@ function VersionCard({
                 <Button variant="outline" size="sm" onClick={goToRegistrations} className="h-8 bg-background border-border hover:bg-accent hover:text-accent-foreground transition-all duration-300 text-xs">
                   <UserCheck className="h-3 w-3 mr-1" />
                   Registrations
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={viewCourseVideos}
+                  className="h-8 bg-background border-border hover:bg-accent hover:text-accent-foreground transition-all duration-300 text-xs"
+                >
+                  <Video className="h-3 w-3 mr-1" />
+                  Course Videos
                 </Button>
                 <Button
                   variant="outline"

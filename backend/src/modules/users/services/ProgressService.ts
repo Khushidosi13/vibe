@@ -824,11 +824,13 @@ class ProgressService extends BaseService {
     if (itemsGroup && itemsGroup.items) {
       itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
     }
-    const sortedItems = itemsGroup.items.sort((a, b) =>
+    const sortedItems = (itemsGroup?.items ?? []).sort((a, b) =>
       String(a.order).localeCompare(String(b.order)),
     );
-    const lastItem = sortedItems[sortedItems.length - 1]._id;
-    if (lastItem?.toString() === itemId) {
+    const lastItem = sortedItems.length
+      ? sortedItems[sortedItems.length - 1]._id
+      : undefined;
+    if (!sortedItems.length || lastItem?.toString() === itemId) {
       isLastItem = true;
     }
 
@@ -946,11 +948,11 @@ class ProgressService extends BaseService {
     if (itemsGroup && itemsGroup.items) {
       itemsGroup.items = itemsGroup.items.filter((i: any) => !i.isHidden && !i.isDeleted);
     }
-    const sortedItems = itemsGroup.items.sort((a, b) =>
+    const sortedItems = (itemsGroup?.items ?? []).sort((a, b) =>
       String(a.order).localeCompare(String(b.order)),
     );
-    const firstItem = sortedItems[0]._id;
-    if (firstItem?.toString() === itemId) {
+    const firstItem = sortedItems.length ? sortedItems[0]._id : undefined;
+    if (!sortedItems.length || firstItem?.toString() === itemId) {
       isFirstItem = true;
     }
 
@@ -2700,6 +2702,9 @@ class ProgressService extends BaseService {
         followUp.courseId.toString(),
         followUp.courseVersionId.toString(),
         followUp.cohortId?.toString(),
+        // System-initiated: there is no sender to check for admin. Whether a
+        // cohort is set was decided when the follow-up was configured.
+        true,
       );
     } catch (error) {
       // Never let follow-up invite failures break course completion.
@@ -2834,6 +2839,8 @@ class ProgressService extends BaseService {
       targetCourseId,
       targetVersionId,
       targetCohortId,
+      // Backfill of an already-configured follow-up; same reasoning as above.
+      true,
     );
 
     return summary;
