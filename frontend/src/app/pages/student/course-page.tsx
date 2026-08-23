@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCourseVersionById, useUserProgress, useItemsBySectionId, useItemById, useGetProcotoringSettings, useSubmitFlag, enqueueNavigation, useSkipOptionalItem, useRecalculateStudentProgress, useInvites, useAcceptInvite } from "@/hooks/hooks";
 import { useAuthStore } from "@/store/auth-store";
 import { useCourseStore } from "@/store/course-store";
+import { useShareLinkStore } from "@/store/share-link-store";
 import { Link, Navigate, useRouter } from "@tanstack/react-router";
 import StudentProjectItem from "./components/StudentProjectItem";
 import { enterFullscreen, exitFullscreen } from "@/utils/fullscreen";

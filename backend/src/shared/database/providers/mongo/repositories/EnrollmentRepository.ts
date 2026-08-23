@@ -431,6 +431,50 @@ export class EnrollmentRepository {
     );
   }
 
+  /**
+   * Marks an enrollment as existing only to give a share-link recipient
+   * access, so rosters and enrollment statistics can leave it out.
+   */
+  async markShareLinkGuestEnrollment(
+    userId: string,
+    courseId: string,
+    courseVersionId: string,
+    session?: ClientSession,
+  ): Promise<void> {
+    await this.init();
+    await this.enrollmentCollection.updateOne(
+      {
+        userId: new ObjectId(userId),
+        courseId: new ObjectId(courseId),
+        courseVersionId: new ObjectId(courseVersionId),
+      },
+      { $set: { isShareLinkGuest: true } },
+      { session },
+    );
+  }
+
+  /**
+   * Marks the instructor's own enrollment into their hidden quick-share
+   * holder, so it stays out of their course lists and counts.
+   */
+  async markQuickShareContainerEnrollment(
+    userId: string,
+    courseId: string,
+    courseVersionId: string,
+    session?: ClientSession,
+  ): Promise<void> {
+    await this.init();
+    await this.enrollmentCollection.updateOne(
+      {
+        userId: new ObjectId(userId),
+        courseId: new ObjectId(courseId),
+        courseVersionId: new ObjectId(courseVersionId),
+      },
+      { $set: { isQuickShareContainer: true } },
+      { session },
+    );
+  }
+
   async bulkUpdateEnrollmentStatus(
     courseId: string,
     versionId: string,
@@ -532,6 +576,8 @@ export class EnrollmentRepository {
           $match: {
             userId: { $in: [userObjectId, userId] },
             role,
+            // The hidden quick-share holder is not a course they teach.
+            isQuickShareContainer: { $ne: true },
             isDeleted: { $ne: true },
             status: 'ACTIVE',
           },
@@ -722,6 +768,8 @@ export class EnrollmentRepository {
         $match: {
           userId: { $in: [userObjectId, userId] },
           role,
+          // The hidden quick-share holder is not a course they teach.
+          isQuickShareContainer: { $ne: true },
           isDeleted: { $ne: true },
           status: { $regex: /^active$/i },
         },
@@ -1017,6 +1065,8 @@ export class EnrollmentRepository {
         $match: {
           userId: { $in: [new ObjectId(userId), userId] },
           role,
+          // The hidden quick-share holder is not a course they teach.
+          isQuickShareContainer: { $ne: true },
           isDeleted: { $ne: true },
           status: { $regex: /^active$/i },
         },
@@ -1610,6 +1660,9 @@ export class EnrollmentRepository {
     const baseMatch: any = {
       courseId: { $in: [courseId, new ObjectId(courseId)] },
       courseVersionId: { $in: [courseVersionId, new ObjectId(courseVersionId)] },
+      // Share-link recipients never signed up and are not part of the roster;
+      // they are reported separately, on the share-link dashboard.
+      isShareLinkGuest: { $ne: true },
     };
 
     let matchStage: any = { ...baseMatch };
@@ -2071,6 +2124,8 @@ export class EnrollmentRepository {
               role: 'STUDENT',
               status: { $regex: /^active$/i },
               isDeleted: { $ne: true }, // Exclude soft-deleted enrollments
+              // Sharing a course must not move its completion rate.
+              isShareLinkGuest: { $ne: true },
             },
           },
           {
@@ -2141,6 +2196,20 @@ export class EnrollmentRepository {
                 ],
               },
             },
+          },
+          // Watch time is recorded for share-link guests too, so they have to
+          // be dropped here or a heavy guest viewer would skew the average
+          // watch hours reported for enrolled learners.
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'viewer',
+            },
+          },
+          {
+            $match: { 'viewer.isShareLinkGuest': { $ne: true } },
           },
           {
             $project: {
@@ -2218,6 +2287,8 @@ export class EnrollmentRepository {
     const matchStage: any = {
       userId: { $in: [new ObjectId(userId), userId] },
       role,
+      // The hidden quick-share holder is not a course they teach.
+      isQuickShareContainer: { $ne: true },
       isDeleted: { $ne: true },
       status: { $regex: /^active$/i },
     };
@@ -2319,6 +2390,8 @@ export class EnrollmentRepository {
     const matchStage: any = {
       userId: { $in: [new ObjectId(userId), userId] },
       role,
+      // The hidden quick-share holder is not a course they teach.
+      isQuickShareContainer: { $ne: true },
       isDeleted: { $ne: true },
       status: { $regex: /^active$/i },
     };
@@ -2372,6 +2445,8 @@ export class EnrollmentRepository {
     const matchStage: any = {
       userId: { $in: [new ObjectId(userId), userId] },
       role,
+      // The hidden quick-share holder is not a course they teach.
+      isQuickShareContainer: { $ne: true },
       isDeleted: { $ne: true },
       status: { $regex: /^active$/i },
     };
