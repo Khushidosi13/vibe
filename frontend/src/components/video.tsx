@@ -1186,7 +1186,6 @@ const Video = forwardRef(function Video(props: VideoProps, ref: any) {
     if (!isYouTube) {
       return;
     }
-    }
     if (window.YT && window.YT.Player) {
       createPlayer();
     } else {
