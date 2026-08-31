@@ -62,7 +62,8 @@ function parseTimeToSeconds(timeStr: string): number {
   }
 }
 
-const Video = forwardRef<VideoRef, VideoProps>(function Video({ URL, source, assetId, startTime, nextItemId, endTime, points, anomalies, readyToDetect, rewindVid, pauseVid, doGesture = false, onNext, isProgressUpdating, onDurationChange, keyboardLockEnabled = true, focusMode = false, linearProgressionEnabled, seekForwardEnabled, isCompleted, isAlreadyWatched, completedItemIdsRef, pauseSignal, awayPaused = false, isLensEnabled = true }: VideoProps, ref) {
+const Video = forwardRef(function Video(props: VideoProps, ref: any) {
+  const { URL, source, assetId, startTime, nextItemId, endTime, points, anomalies, readyToDetect, rewindVid, pauseVid, doGesture = false, onNext, isProgressUpdating, onDurationChange, keyboardLockEnabled = true, focusMode = false, linearProgressionEnabled, seekForwardEnabled, isCompleted, isAlreadyWatched, completedItemIdsRef, pauseSignal, awayPaused = false, isLensEnabled = true } = props;
   /**
    * An uploaded lesson streams HLS instead of embedding YouTube. Everything else
    * in this component — proctoring, seek gating, watch-time, overlays, keyboard
